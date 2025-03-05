@@ -26,6 +26,7 @@ app.post("/webhook", (req, res) => {
 
   if (req.body.events && req.body.events.length > 0) {
     if (req.body.events[0].type === "message") {
+      const userMessage = req.body.events[0].message.text; // 追加: ユーザーからのメッセージを取得
       const headers = {
         "Content-Type": "application/json",
         Authorization: "Bearer " + TOKEN,
@@ -35,11 +36,7 @@ app.post("/webhook", (req, res) => {
         messages: [
           {
             type: "text",
-            text: "Hello, user",
-          },
-          {
-            type: "text",
-            text: "May I help you?",
+            text: `You said: ${userMessage}`, // 変更: ユーザーのメッセージに応じた返信
           },
         ],
       });
