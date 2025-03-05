@@ -21,6 +21,8 @@ app.get("/", (_, res) => {
 // Messaging APIのWebhookエンドポイント
 app.post("/webhook", (req, res, next) => {
   try {
+    console.log("Received request body:", req.body); // 追加: リクエストボディのログ
+
     if (req.body.events && req.body.events.length > 0 && req.body.events[0].type === "message") {
       const headers = {
         "Content-Type": "application/json",
