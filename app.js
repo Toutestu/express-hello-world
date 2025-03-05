@@ -26,7 +26,6 @@ app.post("/webhook", (req, res) => {
 
   if (req.body.events && req.body.events.length > 0) {
     if (req.body.events[0].type === "message") {
-      res.send("HTTP POST request sent to the webhook URL!");
       const headers = {
         "Content-Type": "application/json",
         Authorization: "Bearer " + TOKEN,
@@ -68,6 +67,7 @@ app.post("/webhook", (req, res) => {
 
       request.on("error", (err) => {
         console.error("Error sending message:", err);
+        res.status(500).send("Error sending message");
       });
 
       request.write(dataString);
