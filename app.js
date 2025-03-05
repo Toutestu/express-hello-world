@@ -21,7 +21,7 @@ app.get("/", (_, res) => {
 // Messaging APIのWebhookエンドポイント
 app.post("/webhook", (req, res, next) => {
   try {
-    if (req.body.events && req.body.events[0].type === "message") {
+    if (req.body.events && req.body.events.length > 0 && req.body.events[0].type === "message") {
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${TOKEN}`,
