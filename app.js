@@ -1,7 +1,6 @@
 // モジュールのインポート
 const https = require("https");
 const express = require("express");
-const axios = require('axios'); // 追加: axiosモジュールのインポート
 
 // 環境変数の取得
 // ポート番号
@@ -22,7 +21,7 @@ app.get("/", (_, res) => {
 });
 
 // ルーティングの設定-Messaging API
-app.post("/webhook", async (req, res) => {
+app.post("/webhook", (req, res) => {
   console.log("Received request body:", req.body); // 追加: リクエストボディのログ
 
   if (req.body.events && req.body.events.length > 0) {
@@ -32,28 +31,12 @@ app.post("/webhook", async (req, res) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + TOKEN,
       };
-
-      // ランダムにAPIを選択して反応を取得
-      let responseText = "今日はいい天気ですね"; // デフォルトのメッセージ
-      try {
-        const apiChoice = Math.random() < 0.5 ? 'advice' : 'joke';
-        if (apiChoice === 'advice') {
-          const response = await axios.get('https://api.adviceslip.com/advice');
-          responseText = response.data.slip.advice;
-        } else {
-          const response = await axios.get('https://v2.jokeapi.dev/joke/Any');
-          responseText = response.data.joke || `${response.data.setup} - ${response.data.delivery}`;
-        }
-      } catch (error) {
-        console.error("Error fetching response:", error);
-      }
-
       const dataString = JSON.stringify({
         replyToken: req.body.events[0].replyToken,
         messages: [
           {
             type: "text",
-            text: responseText, // 変更: ランダムな反応を返信
+            text: `You said: ${userMessage}`, // 変更: ユーザーのメッセージに応じた返信
           },
         ],
       });
