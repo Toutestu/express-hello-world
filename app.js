@@ -3,7 +3,7 @@ const https = require("https");
 const express = require("express");
 
 // 環境変数の取得
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 const TOKEN = process.env.LINE_ACCESS_TOKEN;
 
 // Expressアプリケーションオブジェクトの生成
