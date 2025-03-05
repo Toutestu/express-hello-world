@@ -23,47 +23,51 @@ app.post("/webhook", (req, res, next) => {
   try {
     console.log("Received request body:", req.body); // 追加: リクエストボディのログ
 
-    if (req.body.events && req.body.events.length > 0 && req.body.events[0].type === "message") {
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${TOKEN}`,
-      };
+    if (req.body.events && req.body.events.length > 0) {
+      if (req.body.events[0].type === "message") {
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${TOKEN}`,
+        };
 
-      const data = {
-        replyToken: req.body.events[0].replyToken,
-        messages: [
-          { type: "text", text: "Hello, user" },
-          { type: "text", text: "May I help you?" },
-        ],
-      };
+        const data = {
+          replyToken: req.body.events[0].replyToken,
+          messages: [
+            { type: "text", text: "Hello, user" },
+            { type: "text", text: "May I help you?" },
+          ],
+        };
 
-      const options = {
-        hostname: "api.line.me",
-        path: "/v2/bot/message/reply",
-        method: "POST",
-        headers: headers,
-      };
+        const options = {
+          hostname: "api.line.me",
+          path: "/v2/bot/message/reply",
+          method: "POST",
+          headers: headers,
+        };
 
-      const request = https.request(options, (apiRes) => {
-        let responseData = "";
-        apiRes.on("data", (chunk) => {
-          responseData += chunk;
+        const request = https.request(options, (apiRes) => {
+          let responseData = "";
+          apiRes.on("data", (chunk) => {
+            responseData += chunk;
+          });
+          apiRes.on("end", () => {
+            console.log("Response from LINE API:", responseData);
+            res.status(200).send("Message sent");
+          });
         });
-        apiRes.on("end", () => {
-          console.log("Response from LINE API:", responseData);
-          res.status(200).send("Message sent");
+
+        request.on("error", (err) => {
+          console.error("Error sending message:", err);
+          next(err);
         });
-      });
 
-      request.on("error", (err) => {
-        console.error("Error sending message:", err);
-        next(err);
-      });
-
-      request.write(JSON.stringify(data));
-      request.end();
+        request.write(JSON.stringify(data));
+        request.end();
+      } else {
+        res.status(400).send("Invalid event type");
+      }
     } else {
-      res.status(400).send("Invalid event data");
+      res.status(200).send("No events to process"); // 変更: イベントがない場合でも200を返す
     }
   } catch (err) {
     next(err);
